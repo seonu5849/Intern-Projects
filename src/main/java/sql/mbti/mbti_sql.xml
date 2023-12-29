@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="mbti">
+	    
+		<resultMap type="com.spring.board.vo.BoardVo" id="mbtiVo">
+	    	<result property="boardType" 	column="BOARD_TYPE"/>
+		    <result property="boardNum" column="BOARD_NUM"/>
+		    <result property="boardTitle" column="BOARD_TITLE"/>
+		    <result property="boardComment" column="BOARD_COMMENT"/>
+		    <result property="creator" column="CREATOR"/>
+		    <result property="modifier" column="MODIFIER"/>
+		    <result property="totalCnt" column="TOTAL_CNT"/>
+		</resultMap>
+	
+	    
+	    <!-- parameterType="com.spring.board.vo.PageVo" -->
+	    <select id="mbtiList" parameterType="com.spring.board.vo.PageVo" resultMap="mbtiVo">
+	       	SELECT
+			    BOARD_TYPE,
+			    BOARD_NUM,
+			    BOARD_COMMENT
+			FROM
+			    BOARD
+			WHERE
+			    BOARD_TYPE NOT LIKE 'a%'
+			ORDER BY
+			    BOARD_NUM ASC
+		    OFFSET #{pageNo} ROW FETCH NEXT #{perPage} ROW ONLY
+	    </select>
+	    
+	    <select id="mbtiTotalCnt" resultType="Integer">
+	    	SELECT
+			    COUNT(BOARD_TYPE)
+			FROM
+			    BOARD
+			WHERE
+			    BOARD_TYPE NOT LIKE 'a%'
+	    </select>
+	    
+	</mapper>

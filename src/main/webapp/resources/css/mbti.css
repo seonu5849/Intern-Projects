@@ -1,0 +1,133 @@
+@charset "UTF-8";
+
+*{
+		margin: 0;
+		padding: 0;
+	}
+	
+	#mbtiList {
+		width: 100%;
+	}
+	
+	#mbtiQuestion {
+        text-align: center;
+        width: 880px;
+        margin: 50px auto 30px;
+        padding-top: 10px;
+    }
+	
+	#mbtiQuestion td {
+		margin-top: 3px;
+		margin-bottom: 10px;
+	}
+	.txt{
+    	font-size: 15px;
+    	font-weight: bold;
+    	margin: 0px 5px 0px 5px;
+    }
+    .comment {
+    	font-size: 20px;
+    	word-wrap: break-word;
+    }
+	
+	.num{
+		width: 50px;
+	}
+    
+    .mbtiRadio {
+        display: flex;
+        justify-content: center; /* 가로 정렬을 위해 추가 */
+        align-items: center;
+        text-align: center;
+    }
+
+    .mbtiRadio div{
+        margin: 5px; /* 원하는 margin 값으로 변경 */
+        display: flex;
+        align-items: center;
+    }
+    .mbtiRadio div > [class^='option'] {
+    	display: inline;
+    	margin: 5px;
+    }
+    
+    .mbtiRadio div > .option3 {
+    	width: 50px;
+    	height: 50px;
+    	border-radius: 50%;
+    }
+    .mbtiRadio div > .option2 {
+    	width: 40px;
+    	height: 40px;
+    	border-radius: 50%;
+    }
+    .mbtiRadio div > .option1 {
+    	width: 30px;
+    	height: 30px;
+    	border-radius: 50%;
+    }
+    .mbtiRadio div > .option0 {
+    	width: 20px;
+    	height: 20px;
+    	border-radius: 50%;
+    }
+    .mbtiRadio div > .green {
+    	appearance: none;
+    	border: 2px solid #33A474;
+    	outline: none;
+    }
+    .mbtiRadio div > .purple {
+    	appearance: none;
+    	border: 2px solid #88619A;
+    	outline: none;
+    }
+    .mbtiRadio div > .gray {
+    	appearance: none;
+    	border: 2px solid #343C4B;
+    	outline: none;
+    }
+    .mbtiRadio div > .green:checked,
+    .mbtiRadio div > .green:hover {
+    	background-color: #33A474;
+    }
+    .mbtiRadio div > .purple:checked,
+    .mbtiRadio div > .purple:hover{
+    	background-color: #88619A;
+    }
+    .mbtiRadio div > .gray:checked,
+    .mbtiRadio div > .gray:hover {
+    	background-color: #343C4B;
+    }
+    
+    .mbtiRadio > .t_green{
+    	color: #33A474;
+    }
+    .mbtiRadio > .t_purple{
+    	color: #88619A;
+    }
+    
+    #btnGroup{
+    	text-align: center;
+    }
+    #btnGroup input[type=button]{
+    	margin-left: 35px;
+    	padding: 5px 15px 5px 15px;
+    	border-radius: 15px;
+    	cursor: pointer;
+    }
+    #btnGroup input[type=button]:hover{
+    	background-color: #888;
+    	color: #fff;
+    }
+    
+    .container {
+    	width: 100%;
+    }
+    .center {
+    	margin-top: 50px;
+    	text-align: center;
+    }
+    .center > label {
+    	display: block;
+    	margin: 20px;
+    }

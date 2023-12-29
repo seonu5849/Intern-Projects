@@ -1,0 +1,83 @@
+@charset "UTF-8";
+
+	*{
+		margin: 0;
+		padding: 0;
+	}
+
+	.container {
+		margin: 20px 0 20px;
+		padding: 10px 0 10px;
+		width: 100%;
+		min-width: 800px;
+		border: 3px double black;
+	}
+	
+	.education td:nth-child(4) span{
+		display: block;
+	}
+	
+	#infoTable span{
+		margin: 10px;
+	}
+	
+	/*.education,
+	.career,
+	.certificate {
+		text-align: center;
+	}*/
+	
+	#submitPage {
+		text-align: center;
+		margin: 10px;
+		padding: 13px;
+		box-shadow: 2px 3px 5px 0px;
+	}
+	#submitPage > h2 {
+		color: red;
+	}
+	
+	table {
+		margin: auto;
+		border: 1px solid black;
+	}
+	table:not(#infoTable){
+		width: 800px;
+	}
+	table td:nth-child(1), td:nth-child(3) {
+		text-align: center;
+		width: 100px;
+	}
+	tr, th, td {
+		border: 1px solid black;
+	}
+
+	#user_info_detail_table td{
+		text-align: center;
+		width:200px;
+	}
+	
+	.title {
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+	}
+	.title > h2 {
+		margin: 10px;
+	}
+	.title > div{
+		margin: 50px 10px 10px;
+	}
+	.educationTable {
+		margin: auto;
+	}
+	.td1 td:nth-child(1){
+		width: 20px;
+	}
+	
+	.btnGroup {
+		text-align: center;
+	}
+	input[type=button] {
+		padding: 2px 5px;
+	}

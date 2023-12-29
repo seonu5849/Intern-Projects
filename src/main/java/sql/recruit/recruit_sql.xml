@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="recruit">
+	    
+	    <resultMap id="recruitVo" type="com.spring.board.vo.RecruitVo">
+	    	<result property="seq" column="SEQ"/>
+	    	<result property="name" column="NAME"/>
+	    	<result property="birth" column="BIRTH"/>
+	    	<result property="gender" column="GENDER"/>
+	    	<result property="phone" column="PHONE"/>
+	    	<result property="email" column="EMAIL"/>
+	    	<result property="addr" column="ADDR"/>
+	    	<result property="hopeLocation" column="LOCATION"/>
+	    	<result property="workType" column="WORK_TYPE"/>
+	    	<result property="submit" column="SUBMIT"/>
+
+			<collection property="educationVo" resultMap="educationVo" javaType="List"/>
+			<collection property="careerVo" resultMap="careerVo" javaType="List"/>
+			<collection property="certificateVo" resultMap="certificateVo" javaType="List"/>
+	    </resultMap>
+	    
+	    <resultMap id="educationVo" type="com.spring.board.vo.EducationVo">
+	    	<result property="eduSeq" column="EDU_SEQ"/>
+	    	<result property="seq" column="SEQ"/>
+	    	<result property="schoolName" column="SCHOOL_NAME"/>
+	    	<result property="division" column="DIVISION"/>
+	    	<result property="eduStartPeriod" column="START_PERIOD"/>
+	    	<result property="eduEndPeriod" column="END_PERIOD"/>
+	    	<result property="major" column="MAJOR"/>
+	    	<result property="grade" column="GRADE"/>
+	    	<result property="schoolLocation" column="LOCATION"/>
+	    </resultMap>
+	    
+	    <resultMap type="com.spring.board.vo.CareerVo" id="careerVo">
+	    	<result property="carSeq" column="CAR_SEQ"/>
+	    	<result property="seq" column="SEQ"/>
+	    	<result property="compName" column="COMP_NAME"/>
+	    	<result property="jobLocation" column="LOCATION"/>
+	    	<result property="jobStartPeriod" column="START_PERIOD"/>
+	    	<result property="jobEndPeriod" column="END_PERIOD"/>
+	    	<result property="task" column="TASK"/>
+	    	<result property="salary" column="SALARY"/>
+	    </resultMap>
+	    
+	    <resultMap type="com.spring.board.vo.CertificateVo" id="certificateVo">
+	    	<result property="certSeq" column="CERT_SEQ"/>
+	    	<result property="seq" column="SEQ"/>
+	    	<result property="qualifiName" column="QUALIFI_NAME"/>
+	    	<result property="acquDate" column="ACQU_DATE"/>
+	    	<result property="organizeName" column="ORGANIZE_NAME"/>
+	    </resultMap>
+	    
+	    <resultMap id="userSaveInfo" type="com.spring.board.vo.UserSaveInfo">
+	    	<result property="schoolName" column="SCHOOL_NAME"/>
+	    	<result property="schoolYear" column="SCHOOL_YEAR"/>
+	    	<result property="division" column="DIVISION"/>
+	    	<result property="jobYear" column="JOB_YEAR"/>
+	    	<result property="jobMonth" column="JOB_MONTH"/>
+	    	<result property="salary" column="SALARY"/>
+	    </resultMap>
+	    
+	    <select id="selectUser" parameterType="com.spring.board.vo.RecruitVo" resultMap="recruitVo">
+	    	SELECT
+			    seq,
+				name,
+				birth,
+				gender,
+				phone,
+				email,
+				addr,
+				location,
+				work_type,
+				submit
+			FROM
+			    recruit
+			WHERE
+			    name = #{name}
+			    AND phone = #{phone}
+	    </select>
+	    
+	    <select id="validateUser" parameterType="com.spring.board.vo.RecruitVo" resultType="Integer">
+	    	SELECT
+			    count(SEQ)
+			FROM
+			    recruit
+			WHERE
+			    name = #{name}
+			    AND phone = #{phone}
+	    </select>
+	    
+	    <select id="selectEducationDetail" resultMap="educationVo">
+	    	SELECT
+			    EDU_SEQ,
+				SEQ,
+				SCHOOL_NAME,
+				DIVISION,
+				START_PERIOD,
+				END_PERIOD,
+				MAJOR,
+				GRADE,
+				LOCATION
+			FROM
+			    education
+			WHERE
+		    	seq = #{seq}
+		    ORDER BY START_PERIOD asc
+	    </select>
+	    
+	    <select id="selectCareerDetail" resultMap="careerVo">
+	    	SELECT
+	    		CAR_SEQ,
+				SEQ,
+				COMP_NAME,
+				LOCATION,
+				START_PERIOD,
+				END_PERIOD,
+				TASK,
+				SALARY
+			FROM
+				career
+			WHERE 
+				seq = #{seq}
+			ORDER BY START_PERIOD asc
+	    </select>
+	    
+	    <select id="selectCertificateDetail" resultMap="certificateVo">
+	    	SELECT
+	    		CERT_SEQ,
+				SEQ,
+				QUALIFI_NAME,
+				ACQU_DATE,
+				ORGANIZE_NAME
+			FROM
+				certificate
+			WHERE
+				seq = #{seq}
+			ORDER BY ACQU_DATE asc
+	    </select>
+	    
+	    <insert id="mergeRecruit" parameterType="com.spring.board.vo.RecruitVo">
+	    	MERGE INTO recruit r
+	    	USING dual
+	    	ON (r.seq = #{seq, jdbcType=VARCHAR})
+	    	WHEN MATCHED THEN
+	    		UPDATE SET 
+	    			name = #{name}, 
+	    			birth = #{birth}, 
+	    			gender = #{gender}, 
+	    			phone = #{phone},
+	    			email = #{email}, 
+	    			addr = #{addr},
+	    			location = #{hopeLocation},
+	    			work_type = #{workType},
+	    			submit = #{submit, jdbcType=VARCHAR}
+	    	WHEN NOT MATCHED THEN
+		    	INSERT (seq, name, birth, gender, phone, email, addr, location, work_type)
+	    		VALUES (
+	    			(SELECT to_char(nvl(max(seq), 0) + 1) FROM recruit),
+	    			#{name},
+	    			#{birth},
+	    			#{gender},
+	    			#{phone},
+	    			#{email},
+	    			#{addr},
+	    			#{hopeLocation},
+	    			#{workType}
+	    		)
+	    </insert>
+	    
+	    <insert id="mergeEducation" parameterType="com.spring.board.vo.EducationVo">
+	    	MERGE INTO education e
+				USING dual
+				ON (e.seq = #{seq} AND e.edu_seq = #{eduSeq, jdbcType=VARCHAR})
+				WHEN MATCHED THEN
+				    UPDATE SET 
+						school_name = #{schoolName},
+						division = #{division},
+						start_period = #{eduStartPeriod},
+						end_period = #{eduEndPeriod},
+						major = #{major},
+						grade = #{grade},
+						location = #{schoolLocation}
+				WHEN NOT MATCHED THEN
+				    INSERT (edu_seq, seq, school_name, division, start_period, end_period, major, grade, location)
+				    VALUES (
+				        (SELECT NVL(MAX(edu_seq), 0) + 1 FROM education),
+				        #{seq},
+				        #{schoolName},
+				        #{division},
+				        #{eduStartPeriod},
+				        #{eduEndPeriod},
+				        #{major},
+				        #{grade},
+				        #{schoolLocation}
+				    )
+	    </insert>
+	    
+	    <insert id="mergeCareer" parameterType="com.spring.board.vo.CareerVo">
+	    	MERGE INTO career c
+				USING dual
+				ON (c.seq = #{seq} AND c.car_seq = #{carSeq})
+				WHEN MATCHED THEN
+				    UPDATE SET 
+						comp_name = #{compName},
+						location = #{jobLocation},
+						start_period = #{jobStartPeriod},
+						end_period = #{jobEndPeriod},
+						task = #{task},
+						salary = #{salary}
+				WHEN NOT MATCHED THEN
+				    INSERT (car_seq, seq, comp_name, location, start_period, end_period, task, salary)
+				    VALUES (
+				        (SELECT NVL(MAX(car_seq), 0) + 1 FROM career),
+				        #{seq},
+				        #{compName},
+				        #{jobLocation},
+				        #{jobStartPeriod},
+				        #{jobEndPeriod},
+				        #{task},
+				        #{salary}
+				    )
+	    </insert>
+	    
+	    <insert id="mergeCertificate" parameterType="com.spring.board.vo.CertificateVo">
+	    	MERGE INTO certificate c
+				USING dual
+				ON (c.seq = #{seq} AND cert_seq = #{certSeq})
+				WHEN MATCHED THEN
+				    UPDATE SET 
+						qualifi_name = #{qualifiName},
+						acqu_date = #{acquDate},
+						organize_name = #{organizeName}
+				WHEN NOT MATCHED THEN
+				    INSERT (cert_seq, seq, qualifi_name, acqu_date, organize_name)
+				    VALUES (
+				        (SELECT NVL(MAX(cert_seq), 0) + 1 FROM certificate),
+				        #{seq},
+				        #{qualifiName},
+				        #{acquDate},
+				        #{organizeName}
+				    )
+	    </insert>
+	    
+	    <delete id="deleteEducation">
+	    	DELETE FROM education WHERE edu_seq = #{eduSeq}
+	    </delete>
+	    
+	    <delete id="deleteCareer">
+	    	DELETE FROM career WHERE car_seq = #{carSeq}
+	    </delete>
+	    
+	    <delete id="deleteCertificate">
+	    	DELETE FROM certificate WHERE cert_seq = #{certSeq}
+	    </delete>
+	    
+	    <select id="selectUserInfoEducationDetail" resultMap="userSaveInfo">
+	    	SELECT 
+			    round(sum(months_between(to_date(end_period,'yyyy/MM'),to_date(start_period, 'yyyy/MM')) / 12)) as "SCHOOL_YEAR",
+				max(division) as division
+			FROM 
+			    education
+			WHERE 
+			    seq = #{seq}
+	    </select>
+	    
+	    <select id="selectUserInfoCareerDetail" resultMap="userSaveInfo">
+	    	<!-- SELECT 
+		        NVL(ROUND(SUM(MONTHS_BETWEEN(TO_DATE(end_period,'yyyy/MM'), TO_DATE(start_period,'yyyy/MM'))+1)/12),0) AS "JOB_YEAR",
+        		NVL(ROUND(MOD(SUM(MONTHS_BETWEEN(TO_DATE(end_period,'yyyy/MM'), TO_DATE(start_period,'yyyy/MM'))+1),12)),0) AS "JOB_MONTH",
+		        NVL(salary, 0) as "salary"
+		    FROM 
+		        career
+		    WHERE 
+		        seq = #{seq}
+		    GROUP BY
+		        SALARY
+		UNION ALL
+		SELECT 0 AS "JOB_YEAR", 0 AS "JOB_MONTH", '회사내규에 따름' AS SALARY
+		FROM career
+		where not exists(
+		    SELECT 
+		        NVL(ROUND(SUM(MONTHS_BETWEEN(TO_DATE(end_period,'yyyy/MM'), TO_DATE(start_period,'yyyy/MM'))+1)/12),0) AS "JOB_YEAR",
+        		NVL(ROUND(MOD(SUM(MONTHS_BETWEEN(TO_DATE(end_period,'yyyy/MM'), TO_DATE(start_period,'yyyy/MM'))+1),12)),0) AS "JOB_MONTH",
+		        NVL(salary, 0) as "salary"
+		    FROM 
+		        career
+		    WHERE 
+		        seq = #{seq}
+		    GROUP BY
+		        SALARY
+		    )
+		AND ROWNUM = 1 -->
+		select
+		    sum(MONTHS_BETWEEN(TO_DATE(end_period,'yyyy/MM'), TO_DATE(start_period,'yyyy/MM'))+1) as "JOB_MONTH"
+		from
+		    career
+		where
+		    seq = #{seq}
+	    </select>
+	    
+	</mapper>

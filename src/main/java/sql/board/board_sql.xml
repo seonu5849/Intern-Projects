@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+    
+	<resultMap type="com.spring.board.vo.BoardVo" id="boardVo">
+    	<result property="boardType" 	column="BOARD_TYPE"/>
+	    <result property="boardNum" column="BOARD_NUM"/>
+	    <result property="boardTitle" column="BOARD_TITLE"/>
+	    <result property="boardComment" column="BOARD_COMMENT"/>
+	    <result property="creator" column="CREATOR"/>
+	    <result property="modifier" column="MODIFIER"/>
+	    <result property="totalCnt" column="TOTAL_CNT"/>
+	    
+	    <collection property="comCodeVo" resultMap="ComCodeVo"/>
+	</resultMap>
+	
+	<resultMap type="com.spring.board.vo.ComCodeVo" id="ComCodeVo">
+	    <result property="codeType" column="CODE_TYPE"/>
+	    <result property="codeId" column="CODE_ID"/>
+	    <result property="codeName" column="CODE_NAME"/>
+	    <result property="ceator" column="CREATOR"/>
+	    <result property="createTime" column="CREATE_TIME"/>
+	    <result property="modified" column="MODIFIED"/>
+	    <result property="modifiedTime" column="MODIFIED_TIME"/>
+	</resultMap>
+    
+    <!-- parameterType="com.spring.board.vo.PageVo" -->
+    <select id="boardList" parameterType="map" resultMap="boardVo">
+       SELECT
+       	  BOARD_TYPE
+          ,CODE_NAME
+		  ,BOARD_NUM
+		  ,BOARD_TITLE
+		  ,BOARD_COMMENT
+		  ,TOTAL_CNT
+		FROM 
+		(
+		  SELECT
+		  		BOARD_TYPE
+				,CODE_NAME
+				,BOARD_NUM
+				,BOARD_TITLE
+				,BOARD_COMMENT
+		      	,ROW_NUMBER() OVER(ORDER BY BOARD_NUM DESC) AS NUMROW
+		      	,COUNT(*) OVER() AS TOTAL_CNT
+			FROM
+				BOARD t1 join COM_CODE t2
+	        	ON t1.board_type = t2.code_id
+			WHERE CODE_TYPE = 'menu'
+	            <if test="code != null and code.size() > 0">
+				    AND CODE_ID IN 
+				    <foreach item="codeId" collection="code" open="(" close=")" separator=",">
+				        #{codeId}
+				    </foreach>
+				</if>  
+		)
+		WHERE
+			NUMROW BETWEEN (#{page.pageNo}-1)*#{page.perPage} + 1 AND (#{page.pageNo})*#{page.perPage}
+    </select>
+    
+    <select id="boardTotal" parameterType="java.util.List" resultType="Integer">
+		  SELECT
+		      	COUNT(*) AS TOTAL_CNT
+			FROM
+				BOARD
+			<choose>
+				<when test="list != null and list.size() > 0">
+					WHERE BOARD_TYPE IN
+					<foreach item="codeId" collection="list" open="(" close=")" separator=",">
+				        #{codeId}
+				    </foreach>
+			    </when>
+			</choose>
+    </select>
+    	
+    <select id="boardView" parameterType="com.spring.board.vo.BoardVo" resultMap="boardVo">
+    	SELECT
+        	BOARD_TYPE
+			,BOARD_NUM
+			,BOARD_TITLE
+			,BOARD_COMMENT
+			,CREATOR
+		FROM
+			BOARD
+    	WHERE 	BOARD_NUM  = #{boardNum}
+    	AND 	BOARD_TYPE = #{boardType}
+    </select>	
+    
+    <select id="boardInsert" parameterType="com.spring.board.vo.BoardVo">
+        INSERT INTO 
+        BOARD
+        (BOARD_TYPE
+        ,BOARD_NUM
+        ,BOARD_TITLE
+        ,BOARD_COMMENT
+        ,CREATOR
+        ,CREATE_TIME
+        ,MODIFIER
+        ,MODIFIED_TIME
+        )
+        VALUES
+        (#{boardType}
+        ,(SELECT TO_NUMBER(NVL(MAX(BOARD_NUM), 0) + 1)
+    	FROM BOARD
+	    WHERE BOARD_TYPE = #{boardType})
+        ,#{boardTitle}
+        ,#{boardComment}
+        ,#{creator}
+        ,TO_CHAR(SYSDATE)
+        ,'SYSTEM'
+        ,TO_CHAR(SYSDATE)
+        )
+    </select>
+    
+    <select id="boardUpdate"  parameterType="com.spring.board.vo.BoardVo">
+    	UPDATE BOARD
+    	SET
+    		BOARD_TITLE = #{boardTitle},
+    		BOARD_COMMENT = #{boardComment},
+    		MODIFIER = 'SYSTEM',
+    		MODIFIED_TIME = TO_CHAR(SYSDATE)
+    	WHERE 	BOARD_NUM  = #{boardNum}
+    	AND 	BOARD_TYPE = #{boardType}
+    </select>
+    
+    <delete id="boardDelete" parameterType="com.spring.board.vo.BoardVo">
+    	DELETE FROM BOARD
+    	WHERE 	BOARD_NUM  = #{boardNum}
+    	AND 	BOARD_TYPE = #{boardType}
+    </delete>
+    
+    <select id="selectAllComCode" resultMap="ComCodeVo">
+    	SELECT
+    		CODE_TYPE,
+			CODE_ID,
+			CODE_NAME
+		FROM
+			COM_CODE
+    </select>
+    
+</mapper>
